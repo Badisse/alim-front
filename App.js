@@ -1,20 +1,57 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar } from 'react-native';
+import { useEffect, useState } from 'react';
+import { fetchCustomers } from './api/customer.api';
 
-export default function App() {
+const Customer = ({ name }) => (
+  <View style={styles.item}>
+    <Text style={styles.title}>{name}</Text>
+  </View>
+);
+
+const App = () => {
+
+  let [customers, setCustomers] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const newCustomers = await fetchCustomers();
+      setCustomers(newCustomers);
+    }
+
+    fetchData();
+
+  }, [])
+
+  const renderItem = ({ item }) => (
+    <Customer name={item.name} />
+  );
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        data={customers}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: StatusBar.currentHeight || 0,
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  title: {
+    fontSize: 32,
   },
 });
+
+export default App;
