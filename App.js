@@ -1,7 +1,7 @@
 import React from 'react';
-import { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar } from 'react-native';
+import { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar, Button, Alert } from 'react-native';
 import { useEffect, useState } from 'react';
-import { fetchCustomers } from './api/customer.api';
+import { fetchCustomers, postCustomer } from './api/customer.api';
 
 const Customer = ({ name }) => (
   <View style={styles.item}>
@@ -11,7 +11,7 @@ const Customer = ({ name }) => (
 
 const App = () => {
 
-  let [customers, setCustomers] = useState(null);
+  let [customers, setCustomers] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,6 +27,9 @@ const App = () => {
     <Customer name={item.name} />
   );
 
+  // @ts-ignore
+  const addCustomer = newCustomer => setCustomers(customers => [...customers, newCustomer])
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -34,6 +37,13 @@ const App = () => {
         renderItem={renderItem}
         keyExtractor={item => item.id}
       />
+      <View>
+        <Button title="Add Customer" onPress={() => {
+          const customer = { name: 'test4' }
+          postCustomer(customer);
+          addCustomer(customer)
+        }} />
+      </View>
     </SafeAreaView>
   );
 }
